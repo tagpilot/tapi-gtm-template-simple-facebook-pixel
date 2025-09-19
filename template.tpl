@@ -1,4 +1,4 @@
-﻿___TERMS_OF_SERVICE___
+___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -93,6 +93,7 @@ const standardEventNames = {
   generate_lead: 'Lead',
   begin_checkout: 'InitiateCheckout',
   'gtm.dom': 'PageView',
+  'gtm.js': 'PageView',
   'gtm.historyChange': 'PageView',
   purchase: 'Purchase',
   search: 'Search',
@@ -113,22 +114,22 @@ const getFbq = () => {
   if (fbq) {
     return fbq;
   }
-
+  
   // Initialize the 'fbq' global method to either use
   // fbq.callMethod or fbq.queue)
-  setInWindow('fbq', function() {
+  setInWindow('fbq', function() {    
     const callMethod = copyFromWindow('fbq.callMethod.apply');
-    if (callMethod) {
-      callInWindow('fbq.callMethod.apply', null, arguments);
-    } else {
+    if (callMethod) {           
+      callInWindow('fbq.callMethod.apply', null, arguments); 
+    } else {       
       callInWindow('fbq.queue.push', arguments);
     }
   });
   aliasInWindow('_fbq', 'fbq');
-
+  
   // Create the fbq.queue
   createQueue('fbq.queue');
-
+    
   // Return the global 'fbq' method, created above
   return copyFromWindow('fbq');
 };
@@ -961,5 +962,6 @@ setup: "const mockData = {\n  pixelId: '12345,23456',\n  eventName: 'standard',\
 ___NOTES___
 
 Created on 18/05/2019, 21:57:16
+
 
 
