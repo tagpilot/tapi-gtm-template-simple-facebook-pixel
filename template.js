@@ -30,6 +30,11 @@ const ecommerce = copyFromDataLayer('ecommerce', 1);
 const eventName = copyFromDataLayer('event', 1);
 let eventId = copyFromDataLayer('event_id', 1);
 
+if (!eventId && data.eventId) {
+  eventId = data.eventId;
+}
+
+
 const mappedEventName = standardEventNames[eventName];
 
 // Utility function to use either fbq.queue[]
