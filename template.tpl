@@ -1,4 +1,4 @@
-___TERMS_OF_SERVICE___
+﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -34,6 +34,12 @@ ___TEMPLATE_PARAMETERS___
 
 [
   {
+    "type": "TEXT",
+    "name": "eventName",
+    "displayName": "Event name override",
+    "simpleValueType": true
+  },
+  {
     "alwaysInSummary": true,
     "valueValidators": [
       {
@@ -64,6 +70,12 @@ ___TEMPLATE_PARAMETERS___
     "type": "TEXT",
     "name": "eventId",
     "displayName": "Event ID",
+    "simpleValueType": true
+  },
+  {
+    "type": "TEXT",
+    "name": "customContentIdKey",
+    "displayName": "Custom Content Id",
     "simpleValueType": true
   }
 ]
@@ -107,8 +119,11 @@ if (!eventId && data.eventId) {
   eventId = data.eventId;
 }
 
+let mappedEventName = standardEventNames[eventName];
 
-const mappedEventName = standardEventNames[eventName];
+if (data.eventName) {
+  mappedEventName = data.eventName;
+}
 
 // Utility function to use either fbq.queue[]
 // (if the FB SDK hasn't loaded yet), or fbq.callMethod()
@@ -122,11 +137,11 @@ const getFbq = () => {
   
   // Initialize the 'fbq' global method to either use
   // fbq.callMethod or fbq.queue)
-  setInWindow('fbq', function() {    
+  setInWindow('fbq', function() {
     const callMethod = copyFromWindow('fbq.callMethod.apply');
-    if (callMethod) {           
-      callInWindow('fbq.callMethod.apply', null, arguments); 
-    } else {       
+    if (callMethod) {
+      callInWindow('fbq.callMethod.apply', null, arguments);
+    } else {
       callInWindow('fbq.queue.push', arguments);
     }
   });
@@ -134,7 +149,7 @@ const getFbq = () => {
   
   // Create the fbq.queue
   createQueue('fbq.queue');
-    
+
   // Return the global 'fbq' method, created above
   return copyFromWindow('fbq');
 };
@@ -149,7 +164,7 @@ if (data.userData && data.userData.email && data.userData.phone_number) {
   userData.ph = data.userData.phone_number;
 }
 
-if (!eventId && mappedEventName === 'Purchase') {
+if (mappedEventName === 'Purchase' && ecommerce.transaction_id) {
   eventId = ecommerce.transaction_id;
 }
 
@@ -158,8 +173,9 @@ if (ecommerce) {
   params.value = (ecommerce.value || 0);
   params.currency = ecommerce.currency;
   params.contents = (ecommerce.items || []).map(function(item) {
+    const contentIdKey = data.customContentIdKey || 'item_id';
     return {
-      id: item.item_id,
+      id: item[contentIdKey],
       quantity: item.quantity || 1,
     };
   });
@@ -173,7 +189,7 @@ if (templateStorage.getItem(data.pixelId) === null || (templateStorage.getItem(d
   // Initialize pixel and store in global array
   log('FB INIT', userData);
   fbq('init', data.pixelId, userData);
-  
+
   templateStorage.setItem(data.pixelId, (templateStorage.getItem(data.pixelId) || 0) + 1);
   // Call the fbq() method with the parameters defined earlier
 }

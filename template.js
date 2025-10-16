@@ -34,8 +34,11 @@ if (!eventId && data.eventId) {
   eventId = data.eventId;
 }
 
+let mappedEventName = standardEventNames[eventName];
 
-const mappedEventName = standardEventNames[eventName];
+if (data.eventName) {
+    mappedEventName = data.eventName;
+}
 
 // Utility function to use either fbq.queue[]
 // (if the FB SDK hasn't loaded yet), or fbq.callMethod()
@@ -76,7 +79,7 @@ if (data.userData && data.userData.email && data.userData.phone_number) {
     userData.ph = data.userData.phone_number;
 }
 
-if (!eventId && mappedEventName === 'Purchase') {
+if (mappedEventName === 'Purchase' && ecommerce.transaction_id) {
     eventId = ecommerce.transaction_id;
 }
 
@@ -85,8 +88,9 @@ if (ecommerce) {
     params.value = (ecommerce.value || 0);
     params.currency = ecommerce.currency;
     params.contents = (ecommerce.items || []).map(function(item) {
+        const contentIdKey = data.customContentIdKey || 'item_id';
         return {
-            id: item.item_id,
+            id: item[contentIdKey],
             quantity: item.quantity || 1,
         };
     });
