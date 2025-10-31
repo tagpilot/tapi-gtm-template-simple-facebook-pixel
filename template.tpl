@@ -68,6 +68,12 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "type": "TEXT",
+    "name": "externalId",
+    "displayName": "External ID",
+    "simpleValueType": true
+  },
+  {
+    "type": "TEXT",
     "name": "eventId",
     "displayName": "Event ID",
     "simpleValueType": true
@@ -106,6 +112,7 @@ const standardEventNames = {
   begin_checkout: 'InitiateCheckout',
   'gtm.dom': 'PageView',
   'gtm.js': 'PageView',
+  'gtm.init': 'PageView',
   'gtm.historyChange': 'PageView',
   purchase: 'Purchase',
   search: 'Search',
@@ -162,6 +169,7 @@ const userData = {};
 if (data.userData && data.userData.email && data.userData.phone_number) {
   userData.em = data.userData.email;
   userData.ph = data.userData.phone_number;
+  userData.external_id = data.externalId;
 }
 
 if (mappedEventName === 'Purchase' && ecommerce.transaction_id) {
